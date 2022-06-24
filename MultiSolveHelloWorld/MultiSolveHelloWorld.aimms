@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<References AIMMS_Version="4.86.3.1 (x64)">
+	<MainProject Path="MainProject" />
+	<Library System="true" Path="AimmsPro" />
+	<Library System="true" Path="AimmsWebUI" />
+	<RepositoryLibrary UUID="57DB209B-29FA-435B-8A62-FEA5224F62DB" Name="MultiSolve" Version="1.1.2.1" />
+</References>

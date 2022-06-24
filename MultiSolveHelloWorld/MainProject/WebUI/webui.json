@@ -1,0 +1,593 @@
+{
+  "version": "4.67.0",
+  "application": {
+    "aimms.widget.type": {
+      "literal": "application"
+    },
+    "browsername": {
+      "aimms": {
+        "contents": [
+          "webui::ClientBrowserName"
+        ]
+      }
+    },
+    "browsertimezone": {
+      "aimms": {
+        "contents": [
+          "webui::BrowserTimeZone"
+        ]
+      }
+    },
+    "ignoredst": {
+      "aimms": {
+        "contents": [
+          "webui::IgnoreDST"
+        ]
+      }
+    },
+    "pages": {
+      "literal": {
+        "name": "root",
+        "slug": "root",
+        "children": [
+          {
+            "name": "Main Project",
+            "slug": "main_project",
+            "children": [
+              {
+                "name": "home",
+                "slug": "home",
+                "type": "pagev2-grid",
+                "children": []
+              },
+              {
+                "name": "story",
+                "type": "pagev2-grid",
+                "slug": "story",
+                "children": []
+              },
+              {
+                "name": "demo",
+                "type": "pagev2-grid",
+                "slug": "demo",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "theme.classic": {
+      "literal": "NOT_ALLOWED"
+    },
+    "timezone": {
+      "aimms": {
+        "contents": [
+          "webui::DisplayTimeZone"
+        ]
+      }
+    },
+    "timezone.dst.readonly": {
+      "aimms": {
+        "contents": [
+          "webui::DefaultDSTSettingForDisplayTimeZone"
+        ]
+      }
+    },
+    "workflows.configuration": {
+      "aimms": {
+        "contents": [
+          "sp_appWorkflowSteps"
+        ],
+        "slices": [
+          {
+            "identifier": "sp_appWorkflowSteps",
+            "slice": [
+              {
+                "index": "webui::indexWorkflowOrder",
+                "type": "free",
+                "value": "webui::indexWorkflowOrder"
+              },
+              {
+                "index": "webui::indexNoOfPages",
+                "type": "free",
+                "value": "webui::indexNoOfPages"
+              },
+              {
+                "index": "webui::indexWorkflowPageSpec",
+                "type": "free",
+                "value": "webui::indexWorkflowPageSpec"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "workflows.information": {
+      "aimms": {
+        "contents": [
+          "sp_appWorkflows"
+        ],
+        "slices": [
+          {
+            "identifier": "sp_appWorkflows",
+            "slice": [
+              {
+                "index": "webui::indexWorkflowOrder",
+                "type": "free",
+                "value": "webui::indexWorkflowOrder"
+              },
+              {
+                "index": "webui::indexWorkflowSpec",
+                "type": "free",
+                "value": "webui::indexWorkflowSpec"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "layouts/custom_0e1a1334-4f2c-419f-be90-c536adf7d4bf": {
+    "definition": {
+      "literal": {
+        "componentName": "Grid",
+        "props": {
+          "gridTemplateColumns": "1fr 1fr",
+          "gridTemplateRows": "1fr 1fr",
+          "gridTemplateAreas": "\"area-a area-b\" \"area-c area-d\""
+        },
+        "items": [
+          {
+            "componentName": "WidgetArea",
+            "props": {
+              "gridArea": "area-a",
+              "name": "Area A",
+              "gridAutoFlow": "row"
+            }
+          },
+          {
+            "componentName": "WidgetArea",
+            "props": {
+              "gridArea": "area-b",
+              "name": "Area B",
+              "gridAutoFlow": "row"
+            }
+          },
+          {
+            "componentName": "WidgetArea",
+            "props": {
+              "gridArea": "area-c",
+              "name": "Area C",
+              "gridAutoFlow": "row"
+            }
+          },
+          {
+            "componentName": "WidgetArea",
+            "props": {
+              "gridArea": "area-d",
+              "name": "Area D",
+              "gridAutoFlow": "row"
+            }
+          }
+        ]
+      }
+    },
+    "displayName": {
+      "literal": "DemoPageLayoutMultiSolverHelloWorld"
+    }
+  },
+  "pages/demo": {
+    "aimms.widget.type": {
+      "literal": "pagev2-grid"
+    },
+    "bindings": {
+      "literal": [
+        {
+          "widgetUri": "objective",
+          "gridArea": "Unassigned widgets",
+          "dndId": "area-dobjective2"
+        },
+        {
+          "widgetUri": "initializeData",
+          "gridArea": "Unassigned widgets",
+          "dndId": "Unassigned widgetsinitializeData0"
+        },
+        {
+          "widgetUri": "runMultiSolve",
+          "gridArea": "Unassigned widgets",
+          "dndId": "Unassigned widgetsrunMultiSolve1"
+        },
+        {
+          "widgetUri": "followObjective",
+          "gridArea": "area-b",
+          "dndId": "area-bfollowObjective3"
+        },
+        {
+          "widgetUri": "demand",
+          "gridArea": "area-a",
+          "dndId": "area-ademand4"
+        },
+        {
+          "widgetUri": "supply",
+          "gridArea": "area-c",
+          "dndId": "area-csupply5"
+        }
+      ]
+    },
+    "layoutId": {
+      "literal": "custom_0e1a1334-4f2c-419f-be90-c536adf7d4bf"
+    },
+    "secondarypageactions": {
+      "aimms": {
+        "contents": [
+          "sp_secondaryActionsDemoPage"
+        ],
+        "slices": [
+          {
+            "identifier": "sp_secondaryActionsDemoPage",
+            "slice": [
+              {
+                "index": "webui::indexPageExtension",
+                "type": "free",
+                "value": "webui::indexPageExtension"
+              },
+              {
+                "index": "webui::indexPageActionSpec",
+                "type": "free",
+                "value": "webui::indexPageActionSpec"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "widgets": {
+      "literal": [
+        {
+          "uri": "demand",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        },
+        {
+          "uri": "supply",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        },
+        {
+          "uri": "objective",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        },
+        {
+          "uri": "runMultiSolve",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        },
+        {
+          "uri": "followObjective",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        },
+        {
+          "uri": "initializeData",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        }
+      ]
+    }
+  },
+  "pages/home": {
+    "aimms.widget.type": {
+      "literal": "pagev2-grid"
+    },
+    "bindings": {
+      "literal": [
+        {
+          "widgetUri": "txt_welcome",
+          "gridArea": "area-a",
+          "dndId": "Unassigned widgetstxt_welcome1"
+        },
+        {
+          "widgetUri": "img_homeLogo",
+          "gridArea": "area-d",
+          "dndId": "area-dimg_homeLogo0"
+        }
+      ]
+    },
+    "layoutId": {
+      "literal": "Layout10"
+    },
+    "widgets": {
+      "literal": [
+        {
+          "uri": "img_homeLogo",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        },
+        {
+          "uri": "txt_welcome",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        }
+      ]
+    }
+  },
+  "pages/story": {
+    "aimms.widget.type": {
+      "literal": "pagev2-grid"
+    },
+    "bindings": {
+      "literal": [
+        {
+          "widgetUri": "txt_problemDescription",
+          "gridArea": "area-a",
+          "dndId": "Unassigned widgetstxt_problemDescription0"
+        }
+      ]
+    },
+    "layoutId": {
+      "literal": "Layout11"
+    },
+    "widgets": {
+      "literal": [
+        {
+          "uri": "txt_problemDescription",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        }
+      ]
+    }
+  },
+  "widgets/demand": {
+    "aimms.widget.type": {
+      "literal": "table"
+    },
+    "contents": {
+      "aimms": {
+        "contents": [
+          "p_demandInst"
+        ]
+      }
+    },
+    "contents.partition": {
+      "literal": {
+        "rowHeader": [
+          "i_inst"
+        ],
+        "colHeader": [
+          "i_trgt"
+        ],
+        "aggregated": [
+          "<IDENTIFIER-SET>"
+        ]
+      }
+    },
+    "custom.column.widths": {
+      "literal": [
+        {
+          "type": "colHeader",
+          "colKey": {
+            "<IDENTIFIER-SET>": "p_demand"
+          },
+          "width": 21.25
+        }
+      ]
+    },
+    "name": {
+      "literal": "demand"
+    },
+    "title": {
+      "literal": "Demand"
+    }
+  },
+  "widgets/followObjective": {
+    "aimms.widget.type": {
+      "literal": "combinationchart"
+    },
+    "contents.__display_order__": {
+      "literal": [
+        "contents.0"
+      ]
+    },
+    "contents.0.identifier": {
+      "literal": {
+        "identifier": "p_obj",
+        "slice": [
+          {
+            "index": "i_inst",
+            "type": "free",
+            "value": "i_inst"
+          }
+        ]
+      }
+    },
+    "contents.chart.type": {
+      "literal": "line"
+    },
+    "contents.partition": {
+      "literal": {
+        "header": [
+          "i_inst"
+        ],
+        "grouped": [],
+        "stacked": [],
+        "aggregated": [
+          "<IDENTIFIER-SET>"
+        ]
+      }
+    },
+    "name": {
+      "literal": "followObjective"
+    },
+    "title": {
+      "literal": "Objective for various instances"
+    }
+  },
+  "widgets/img_homeLogo": {
+    "aimms.widget.type": {
+      "literal": "image"
+    },
+    "contents": {
+      "aimms": {
+        "contents": [
+          "sp_logo"
+        ]
+      }
+    },
+    "name": {
+      "literal": "img_homeLogo"
+    }
+  },
+  "widgets/initializeData": {
+    "action": {
+      "literal": {
+        "type": "procedure",
+        "value": "pr_initData"
+      }
+    },
+    "aimms.widget.type": {
+      "literal": "button"
+    },
+    "name": {
+      "literal": "initializeData"
+    },
+    "title": {
+      "literal": "initializeData"
+    },
+    "widget.visible": {
+      "literal": 0
+    }
+  },
+  "widgets/objective": {
+    "aimms.widget.type": {
+      "literal": "table"
+    },
+    "contents": {
+      "aimms": {
+        "contents": [
+          "p_obj"
+        ]
+      }
+    },
+    "contents.partition": {
+      "literal": {
+        "rowHeader": [
+          "i_inst"
+        ],
+        "colHeader": [
+          "<IDENTIFIER-SET>"
+        ],
+        "aggregated": []
+      }
+    },
+    "custom.column.widths": {
+      "literal": [
+        {
+          "type": "colHeader",
+          "colKey": {
+            "<IDENTIFIER-SET>": "p_obj"
+          },
+          "width": 18.33
+        }
+      ]
+    },
+    "name": {
+      "literal": "objective"
+    },
+    "title": {
+      "literal": "Objectives"
+    }
+  },
+  "widgets/runMultiSolve": {
+    "action": {
+      "literal": {
+        "type": "procedure",
+        "value": "pr_solveMultipleGenerate"
+      }
+    },
+    "aimms.widget.type": {
+      "literal": "button"
+    },
+    "name": {
+      "literal": "runMultiSolve"
+    },
+    "title": {
+      "literal": "runMultiSolve"
+    },
+    "widget.visible": {
+      "literal": 0
+    }
+  },
+  "widgets/supply": {
+    "aimms.widget.type": {
+      "literal": "table"
+    },
+    "contents": {
+      "aimms": {
+        "contents": [
+          "p_supplyInst"
+        ]
+      }
+    },
+    "contents.partition": {
+      "literal": {
+        "rowHeader": [
+          "i_inst"
+        ],
+        "colHeader": [
+          "i_src"
+        ],
+        "aggregated": [
+          "<IDENTIFIER-SET>"
+        ]
+      }
+    },
+    "name": {
+      "literal": "supply"
+    },
+    "title": {
+      "literal": "Supply"
+    }
+  },
+  "widgets/txt_problemDescription": {
+    "aimms.widget.type": {
+      "literal": "text"
+    },
+    "contents": {
+      "literal": "<div><span style=\"font-size: 32px;\"><b>Story</b></span></div><div><br></div><div><span style=\"font-size: 18px;\">A product is transported from the two supply locations ``a`` and ``b``&nbsp;</span></div><div><span style=\"font-size: 18px;\">to the two destination locations ``c`` and ``d``.&nbsp;&nbsp;</span></div><div><span style=\"font-size: 18px;\">There is a capacity limit on the transport from ``a`` to ``d``.</span></div><div><span style=\"font-size: 18px;\">The transport cost is minimized.</span></div><div><br></div><div><span style=\"font-size: 18px;\">We want to investigate how the transportation cost increases with step by step increases of both the supply and the demand.</span></div>"
+    },
+    "name": {
+      "literal": "txt_problemDescription"
+    }
+  },
+  "widgets/txt_welcome": {
+    "aimms.widget.type": {
+      "literal": "text"
+    },
+    "contents": {
+      "literal": "<div><span style=\"background-color: inherit; font-size: 32px;\">Welcome!</span></div><div><br></div><div><span style=\"background-color: inherit; font-size: 18px;\">You are in an AIMMS Example. Feel free to play around and create something more in this app!</span></div><div><span style=\"background-color: inherit; font-size: 18px;\">&nbsp;</span></div><div><span style=\"background-color: inherit; font-size: 18px;\">If you do, please fork this repository and commit your changes.&nbsp;This ensures our GitHub stays up-to-date for the entire community!</span></div><div><br></div><div><span style=\"background-color: inherit; font-size: 18px;\">You can also check our other interactive resources:</span></div><div><br></div><ul><li><span style=\"background-color: inherit; font-size: 18px;\">In the Online&nbsp;</span><a href=\"https://community.aimms.com/\" style=\"background-color: inherit; font-size: 18px;\" target=\"_blank\">Community</a><span style=\"background-color: inherit; font-size: 18px;\">, talk to other developers and AIMMSians about the product, modeling, use cases, and more.</span></li><li><span style=\"background-color: inherit; font-size: 18px;\">In the&nbsp;</span><a href=\"https://academy.aimms.com/\" style=\"background-color: inherit; font-size: 18px;\" target=\"_blank\">Academy</a><span style=\"background-color: inherit; font-size: 18px;\">, learn new skills and challenge yourself. We are busy creating new courses, so keep an eye out!</span></li></ul><div><br></div><div><span style=\"background-color: inherit; font-size: 18px;\">For questions that can't be posted on the community, contact us at&nbsp;</span><i style=\"background-color: rgb(255, 255, 204); font-size: 18px;\">support@aimms.com</i><span style=\"background-color: inherit; font-size: 18px;\">.</span></div><div><br></div><div><br></div>"
+    },
+    "name": {
+      "literal": "txt_welcome"
+    }
+  }
+}

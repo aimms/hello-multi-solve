@@ -1,0 +1,416 @@
+## ams_version=1.0
+
+Model Main_MultiSolveHelloWorld {
+	Section Quantities_and_Units {
+		Comment: {
+			"This section contains all the units and quantities that are added automatically by AIMMS.
+			It is recommended to declare all your quantities here."
+		}
+		Quantity SI_Time_Duration {
+			BaseUnit: s;
+			Conversions: {
+				century->s : #-># * 3153600000,
+				year->s : #-># * 31536000,
+				month->s : #-># * 2628000,
+				week->s : #-># * 604800,
+				day->s : #-># * 86400,
+				hour->s : #-># * 3600,
+				minute->s : #-># * 60,
+				second->s : #-># ,
+				tick->s : #-># / 100
+			}
+			Comment: "Expresses the value for the duration of periods.";
+		}
+	}
+	DeclarationSection Math_Program_Declarations {
+		Set s_sources {
+			Index: i_src;
+			Definition: data { a, b };
+		}
+		Set s_targets {
+			Index: i_trgt;
+			Definition: data { c, d };
+		}
+		Parameter p_supply {
+			IndexDomain: i_src;
+		}
+		Parameter p_demand {
+			IndexDomain: i_trgt;
+		}
+		Parameter p_unitPrice {
+			IndexDomain: (i_src,i_trgt);
+		}
+		Variable v_transport {
+			IndexDomain: (i_src,i_trgt);
+			Range: [0, p_transportCapacity(i_src, i_trgt)];
+		}
+		Parameter p_transportCapacity {
+			IndexDomain: (i_src,i_trgt);
+			Default: inf;
+		}
+		Constraint c_meetDemand {
+			IndexDomain: i_trgt;
+			Definition: sum( i_src, v_transport(i_src, i_trgt) ) >= p_demand(i_trgt);
+		}
+		Constraint c_respectSupply {
+			IndexDomain: i_src;
+			Definition: sum(i_trgt, v_transport(i_src, i_trgt) ) <= p_supply(i_src);
+		}
+		Constraint c_respectCapacity {
+			IndexDomain: (i_src,i_trgt)|0 and nondefault(p_transportCapacity(i_src, i_trgt));
+			Definition: v_transport(i_src, i_trgt) <= p_transportCapacity(i_src, i_trgt);
+		}
+		Variable v_obj {
+			Range: free;
+			Definition: sum( (i_src,i_trgt),  p_unitPrice(i_src, i_trgt) * v_transport(i_src, i_trgt) );
+		}
+		MathematicalProgram mp_transport {
+			Objective: v_obj;
+			Direction: minimize;
+			Constraints: AllConstraints;
+			Variables: AllVariables;
+			Type: Automatic;
+		}
+		ElementParameter ep_transport {
+			Range: AllGeneratedMathematicalPrograms;
+		}
+	}
+	Procedure pr_initData {
+		Body: {
+			p_iter := 0 ;
+			s_instances := ElementRange(1, p_maxNoInstances);
+			Empty p_obj, p_transport ;
+			p_unitPrice(i_src, i_trgt) := data table
+				c	d
+			a	2	2
+			b	3	8 ;
+			p_supply( i_src  ) := data { a : 3,  b : 4 } ;
+			p_demand( i_trgt ) := data { c : 2,  d : 5 } ;
+			p_transportCapacity(i_src, i_trgt) := data { ( a, d ) : 6 } ;
+			p_supplyInst(i_src , i_inst) := p_supply( i_src  ) + ord( i_inst );
+			p_demandInst(i_trgt, i_inst) := p_demand( i_trgt ) + ord( i_inst );
+		}
+	}
+	Procedure pr_setupSolved {
+		Body: {
+			solve mp_transport ;
+		}
+	}
+	Procedure pr_generateInstance {
+		Arguments: (ep_gmp,ep_handle);
+		Body: {
+			p_iter += 1 ;
+			if p_iter > p_maxNoInstances then 
+				ep_handle := '' ;
+			
+				! As there is no more data, this procedure can indicate to
+				! the multiSolve library that it can stop new solve sequences. 
+				p_procedureReturnCode := 0 ; 
+			else
+				! Which instance are going to solve.
+				ep_handle := element( s_instances, p_iter );
+			
+				! Update model parameters for this variation.
+				p_supply(i_src)  := p_supplyInst(i_src,  ep_handle) ;
+				p_demand(i_trgt) := p_demandInst(i_trgt, ep_handle) ;
+			
+				! Create a new GMP from the new data and ensure that its name is unique.
+				ep_gmp := gmp::Instance::Generate( mp_transport,
+					formatString("Instance %e of mp_transport", ep_handle ) );
+			
+				! Indicating there is data, and a GMP is created ready to solve.
+				p_procedureReturnCode := 1;
+			endif ;
+			return p_procedureReturnCode ;
+		}
+		Comment: {
+			"This procedure is a callback for multiSolve::pr_multiSolve
+			
+			The responsibility of this procedure is to generate a GMP that is the next instance of the 
+			mathematical program mp_transport, a simple transport problem."
+		}
+		DeclarationSection Argument_declarations {
+			ElementParameter ep_gmp {
+				Range: AllGeneratedMathematicalPrograms;
+				Property: InOut;
+			}
+			ElementParameter ep_handle {
+				Range: Integers;
+				Property: Output;
+			}
+		}
+		DeclarationSection Local_declarations {
+			Parameter p_procedureReturnCode;
+		}
+	}
+	Procedure pr_modifyInstance {
+		Arguments: (ep_gmp,ep_handle);
+		Body: {
+			p_iter += 1 ;
+			if p_iter > p_maxNoInstances then 
+				ep_handle := '' ;
+			
+				! As there is no more data, this procedure can indicate to
+				! the multiSolve library that it can stop new solve sequences. 
+				p_procedureReturnCode := 0 ; 
+			else
+				! Which instance are going to solve.
+				ep_handle := element( s_instances, p_iter );
+			
+				! Update model parameters for this variation.
+				p_supply(i_src)  := p_supplyInst(i_src,  ep_handle) ;
+				p_demand(i_trgt) := p_demandInst(i_trgt, ep_handle) ;
+			
+				! The GMP to be solved is a small variation of the last solved GMP
+				! Instead of regenerating the entire GMP, only some coefficients 
+				! are modified.  This is signiicantly faster, but can be more involved.
+				gmp::Row::SetRightHandSideMulti(
+					GMP     :  ep_gmp, 
+					binding :  i_src, 
+					row     :  c_respectSupply(i_src), 
+					value   :  p_supply(i_src));
+				gmp::Row::SetRightHandSideMulti(
+					GMP     :  ep_gmp, 
+					binding :  i_trgt, 
+					row     :  c_meetDemand(i_trgt), 
+					value   :  p_demand(i_trgt));
+			
+				! Indicating there is data, and a GMP is created ready to solve.
+				p_procedureReturnCode := 1;
+			endif ;
+			return p_procedureReturnCode ;
+		}
+		Comment: {
+			"This procedure is a callback for multiSolve::pr_multiSolve
+			
+			The responsibility of this procedure is to generate a GMP that is the next instance of the 
+			mathematical program mp_transport, a simple transport problem."
+		}
+		DeclarationSection Argument_declarations {
+			ElementParameter ep_gmp {
+				Range: AllGeneratedMathematicalPrograms;
+				Property: InOut;
+			}
+			ElementParameter ep_finishedSolverSession {
+				Range: AllSolverSessions;
+				Property: Input;
+			}
+			ElementParameter ep_handle {
+				Range: Integers;
+				Property: Output;
+			}
+			ElementParameter ep_step {
+				Range: Integers;
+				Property: Input;
+			}
+		}
+		DeclarationSection Local_declarations {
+			Parameter p_procedureReturnCode;
+		}
+	}
+	Procedure pr_retrieveSolution {
+		Arguments: (ep_gmp,ep_finishedSolverSession,ep_handle,ep_step);
+		Body: {
+			! Translate the handle to index values meaningful for the business.
+			ep_inst := ep_handle ;
+			if not ( ep_handle in s_instances ) then
+				raise error "ep_handle not in s_instances" ;
+			endif ;
+			
+			! Copy the solution in the solver session to all the model variables.
+			multiSolve::pr_storeSolutionInModelVariables(ep_finishedSolverSession);
+			display v_obj, v_transport ;
+			
+			! Store solution in the model variables in the data structures of the instance at hand.
+			p_obj(ep_inst) := v_obj ;
+			p_transport(i_src, i_trgt, ep_inst) := v_transport(i_src, i_trgt);
+			
+			! The Operations Research problem at hand contains only one step, so that one and only step was done.
+			! To indicate there are no next steps:
+			return 0 ;
+		}
+		DeclarationSection Argument_declarations {
+			ElementParameter ep_gmp {
+				Range: AllGeneratedMathematicalPrograms;
+				Property: InOut;
+			}
+			ElementParameter ep_finishedSolverSession {
+				Range: AllSolverSessions;
+				Property: Input;
+			}
+			ElementParameter ep_handle {
+				Range: Integers;
+				Property: Input;
+			}
+			ElementParameter ep_step {
+				Range: Integers;
+				Property: Input;
+			}
+		}
+		DeclarationSection Local_declarations {
+			ElementParameter ep_inst {
+				Range: s_instances;
+			}
+		}
+	}
+	DeclarationSection Multi_instance_declarations {
+		Parameter p_iter {
+			InitialData: 0;
+		}
+		Parameter p_maxNoInstances {
+			InitialData: 5;
+		}
+		Set s_instances {
+			SubsetOf: Integers;
+			Index: i_inst;
+		}
+		Parameter p_supplyInst {
+			IndexDomain: (i_src,i_inst);
+		}
+		Parameter p_demandInst {
+			IndexDomain: (i_trgt,i_inst);
+		}
+		Parameter p_obj {
+			IndexDomain: i_inst;
+		}
+		Parameter p_transport {
+			IndexDomain: (i_src,i_trgt,i_inst);
+		}
+		ElementParameter ep_baseGMP {
+			Range: AllGeneratedMathematicalPrograms;
+		}
+	}
+	Procedure pr_solveMultipleGenerate {
+		Body: {
+			p_iter := 0 ;
+			multiSolve::pr_multiSolve(
+				ep_onProvideGMP           :  'pr_generateInstance', 
+				ep_onRetrieveSolution     :  'pr_retrieveSolution', 
+				ep_baseGMP                :  '', ! Using the Generate call back mode. 
+				p_maxParallelGMPs         :  2,
+				p_maxThreadsPerSolve      :  1, 
+				ep_startingSolutionMethod :  multiSolve::ep_startingSolutionMethod_last);
+		}
+	}
+	Procedure pr_solveMultipleModify {
+		Body: {
+			p_iter := 0 ;
+			ep_baseGMP := gmp::Instance::Generate( mp_transport );
+			gmp::Instance::Solve( ep_baseGMP );
+			
+			multiSolve::pr_multiSolve(
+				ep_onProvideGMP           :  'pr_modifyInstance', 
+				ep_onRetrieveSolution     :  'pr_retrieveSolution', 
+				ep_baseGMP                :  ep_baseGMP, ! Using the modify call back mode. 
+				p_maxParallelGMPs         :  2,
+				p_maxThreadsPerSolve      :  1, 
+				ep_startingSolutionMethod :  multiSolve::ep_startingSolutionMethod_last);
+		}
+	}
+	Section UI_Declarations {
+		StringParameter sp_logo {
+			Definition: "aimms_logo.png";
+		}
+		Section Workflow {
+			StringParameter sp_appWorkflows {
+				IndexDomain: (webui::indexWorkflowOrder,webui::indexWorkflowSpec);
+			}
+			StringParameter sp_appWorkflowSteps {
+				IndexDomain: (webui::indexWorkflowOrder,webui::indexNoOfPages,webui::indexWorkflowPageSpec);
+				Definition: {
+					{ 
+					  ( '1', '1', 'displayText'       ) : "Welcome"            ,  
+					  ( '1', '1', 'icon'              ) : "aimms-happy"        ,
+					  ( '1', '1', 'pageId'            ) : "home"               ,  
+					  ( '1', '1', 'tooltip'           ) : "welcome"            ,
+					  ( '1', '1', 'workflowPageState' ) : "active"             ,  
+					  ( '1', '1', 'pageDataState'     ) : "Incomplete"         ,
+					  ( '1', '1', 'redirectPageId'    ) : "home"               ,
+					
+					  ( '1', '2', 'displayText'       ) : "Story"              ,
+					  ( '1', '2', 'icon'              ) : "aimms-lamp5"        ,  
+					  ( '1', '2', 'pageId'            ) : "story"              ,
+					  ( '1', '2', 'tooltip'           ) : "Problem description",  
+					  ( '1', '2', 'workflowPageState' ) : "active"             ,
+					  ( '1', '2', 'pageDataState'     ) : "Incomplete"         ,  
+					  ( '1', '2', 'redirectPageId'    ) : "home"               ,
+					
+					  ( '1', '3', 'displayText'       ) : "Demo"               ,  
+					  ( '1', '3', 'icon'              ) : "aimms-equalizer2"   ,
+					  ( '1', '3', 'pageId'            ) : "demo"               ,  
+					  ( '1', '3', 'tooltip'           ) : "Input data"         ,
+					  ( '1', '3', 'workflowPageState' ) : "active"             ,  
+					  ( '1', '3', 'pageDataState'     ) : "Incomplete"         ,
+					  ( '1', '3', 'redirectPageId'    ) : "home"                 
+					}
+				}
+			}
+		}
+		Section Pages {
+			StringParameter sp_secondaryActionsDemoPage {
+				IndexDomain: (webui::indexPageExtension,webui::indexPageActionSpec);
+				Definition: {
+					{
+						( '1', 'displaytext' ) : "Initialize"              ,
+						( '1', 'icon'        ) : "aimms-new"               ,
+						( '1', 'procedure'   ) : "pr_initData"             ,
+						( '1', 'state'       ) : "Active"                  ,
+					
+						( '2', 'displaytext' ) : "Run Hello"               ,
+						( '2', 'icon'        ) : "aimms-factory"           ,
+						( '2', 'procedure'   ) : "pr_solveMultipleGenerate",
+						( '2', 'state'       ) : if card(p_obj) then "Inactive" else "Active" endif,
+					
+						( '3', 'displaytext' ) : "Run Modified"            ,
+						( '3', 'icon'        ) : "aimms-eraser2"           ,
+						( '3', 'procedure'   ) : "pr_solveMultipleModify"  ,
+						( '3', 'state'       ) : if card(p_obj) then "Inactive" else "Active" endif 
+					}
+				}
+			}
+		}
+		Section FlagsIdentifier {
+			StringParameter sp_readOnlyFlag {
+				Definition: "readonly";
+			}
+		}
+	}
+	Section Application_initialization_and_termination {
+		Procedure MainInitialization {
+			Body: {
+				ProfilerStart();
+			}
+			Comment: "Add initialization statements here that do NOT require any library being initialized already.";
+		}
+		Procedure PostMainInitialization {
+			Body: {
+				!pr_initData();
+			}
+			Comment: {
+				"Add initialization statements here that require that the libraries are already initialized properly,
+				or add statements that require the Data Management module to be initialized."
+			}
+		}
+		Procedure PreMainTermination {
+			Body: {
+				return 1; ! This Hello World example does not use cases.
+			}
+			Comment: {
+				"Add termination statements here that require all libraries to be still alive.
+				Return 1 if you allow the termination sequence to continue.
+				Return 0 if you want to cancel the termination sequence."
+			}
+		}
+		Procedure MainTermination {
+			Body: {
+				return 1;
+			}
+			Comment: {
+				"Add termination statements here that do not require all libraries to be still alive.
+				Return 1 to allow the termination sequence to continue.
+				Return 0 if you want to cancel the termination sequence.
+				It is recommended to only use the procedure PreMainTermination to cancel the termination sequence and let this procedure always return 1."
+			}
+		}
+	}
+}

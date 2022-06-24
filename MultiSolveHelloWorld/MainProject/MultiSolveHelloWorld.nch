@@ -1,0 +1,7 @@
+* The timestamps in this namechange file are stored in Coordinated universal time (UTC).
+"WebUI_deployment" "UI_Declarations" "2022-06-19 08:51:51"
+"sp_myWorkflows" "sp_appWorkflows" "2022-06-19 09:14:05"
+"sp_myWorkflowSteps" "sp_appWorkflowSteps" "2022-06-19 09:14:13"
+"MainExecution" "pr_solveMultipleGenerate" "2022-06-20 15:25:11"
+"pr_solveMultipleModify" "pr_modifyInstance" "2022-06-20 19:08:35"
+"pr_solveModifyInstance" "pr_solveMultipleModify" "2022-06-20 19:09:13"
