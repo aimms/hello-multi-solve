@@ -359,12 +359,12 @@ Model Main_MultiSolveHelloWorld {
 						( '2', 'displaytext' ) : "Run Hello"               ,
 						( '2', 'icon'        ) : "aimms-factory"           ,
 						( '2', 'procedure'   ) : "pr_solveMultipleGenerate",
-						( '2', 'state'       ) : if card(p_obj) then "Inactive" else "Active" endif,
+						( '2', 'state'       ) : if card( p_obj ) or ( not card( p_supply ) ) then "Inactive" else "Active" endif,
 					
 						( '3', 'displaytext' ) : "Run Modified"            ,
 						( '3', 'icon'        ) : "aimms-eraser2"           ,
 						( '3', 'procedure'   ) : "pr_solveMultipleModify"  ,
-						( '3', 'state'       ) : if card(p_obj) then "Inactive" else "Active" endif 
+						( '3', 'state'       ) : if card( p_obj ) or ( not card( p_supply ) ) then "Inactive" else "Active" endif 
 					}
 				}
 			}

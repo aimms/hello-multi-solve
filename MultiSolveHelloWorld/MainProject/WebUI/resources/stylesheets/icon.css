@@ -1,4 +1,4 @@
 :root {
-  --bg_app-logo: 15px 50% / 175px 30px no-repeat url(/app-resources/resources/images/multiSolveLogo.png);
-  --spacing_app-logo_width: 190px;
+  --bg_app-logo: 15px 50% / 75px 30px no-repeat url(/app-resources/resources/images/multiSolveLogo.png);
+  --spacing_app-logo_width: 90px;
 }
